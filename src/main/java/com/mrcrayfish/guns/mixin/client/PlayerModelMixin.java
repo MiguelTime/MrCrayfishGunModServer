@@ -1,5 +1,6 @@
 package com.mrcrayfish.guns.mixin.client;
 
+import com.mrcrayfish.guns.client.render.ClientGripTypes;
 import com.mrcrayfish.guns.client.handler.AimingHandler;
 import com.mrcrayfish.guns.common.Gun;
 import com.mrcrayfish.guns.item.GunItem;
@@ -48,7 +49,7 @@ public class PlayerModelMixin<T extends LivingEntity>
             }
 
             Gun gun = gunItem.getModifiedGun(heldItem);
-            gun.getGeneral().getGripType().getHeldAnimation().applyPlayerModelRotation(player, model.rightArm, model.leftArm, model.head, InteractionHand.MAIN_HAND, AimingHandler.get().getAimProgress(player, Minecraft.getInstance().getFrameTime()));
+            ClientGripTypes.get(gun.getGeneral().getGripType()).applyPlayerModelRotation(player, model.rightArm, model.leftArm, model.head, InteractionHand.MAIN_HAND, AimingHandler.get().getAimProgress(player, Minecraft.getInstance().getFrameTime()));
             copyModelAngles(model.rightArm, model.rightSleeve);
             copyModelAngles(model.leftArm, model.leftSleeve);
             copyModelAngles(model.head, model.hat);

@@ -5,7 +5,7 @@ import com.mojang.math.Axis;
 import com.mrcrayfish.guns.Config;
 import com.mrcrayfish.guns.client.handler.ReloadHandler;
 import com.mrcrayfish.guns.client.util.RenderUtil;
-import com.mrcrayfish.guns.common.GripType;
+import com.mrcrayfish.guns.client.render.ClientGripTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -169,6 +169,6 @@ public class TwoHandedPose extends WeaponPose
     @Override
     public boolean applyOffhandTransforms(Player player, PlayerModel model, ItemStack stack, PoseStack poseStack, float partialTicks)
     {
-        return GripType.applyBackTransforms(player, poseStack);
+        return ClientGripTypes.applyBackTransforms(player, poseStack);
     }
 }

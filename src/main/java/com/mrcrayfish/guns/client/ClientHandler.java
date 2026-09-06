@@ -1,5 +1,6 @@
 package com.mrcrayfish.guns.client;
 
+import com.mrcrayfish.framework.api.client.FrameworkClientAPI;
 import com.mrcrayfish.guns.GunMod;
 import com.mrcrayfish.guns.client.handler.*;
 import com.mrcrayfish.guns.client.render.gun.ModelOverrides;
@@ -47,6 +48,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -59,9 +62,27 @@ import static com.mrcrayfish.guns.Reference.MOD_ID;
 /**
  * Author: MrCrayfish
  */
-@Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientHandler {
     private static Field mouseOptionsField;
+
+    static {
+        register(FMLJavaModLoadingContext.get().getModEventBus());
+    }
+
+    public static void register(IEventBus bus) {
+        FrameworkClientAPI.registerDataLoader(MetaLoader.getInstance());
+        registerCreativeTab(bus);
+        bus.addListener(KeyBinds::registerKeyMappings);
+        bus.addListener(CrosshairHandler::onConfigReload);
+        bus.addListener(ClientHandler::onRegisterReloadListener);
+        bus.addListener(ClientHandler::registerAdditional);
+    }
+
+    @SubscribeEvent
+    public static void onClientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(ClientHandler::setup);
+    }
 
     public static void setup() {
         MinecraftForge.EVENT_BUS.register(AimingHandler.get());
