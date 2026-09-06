@@ -1,5 +1,6 @@
 package com.mrcrayfish.guns.client;
 
+import com.mrcrayfish.framework.api.client.FrameworkClientAPI;
 import com.mrcrayfish.guns.GunMod;
 import com.mrcrayfish.guns.client.handler.*;
 import com.mrcrayfish.guns.client.render.gun.ModelOverrides;
@@ -62,6 +63,20 @@ import static com.mrcrayfish.guns.Reference.MOD_ID;
 @Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
 public class ClientHandler {
     private static Field mouseOptionsField;
+
+    public static void register(IEventBus bus) {
+        FrameworkClientAPI.registerDataLoader(MetaLoader.getInstance());
+        registerCreativeTab(bus);
+        bus.addListener(KeyBinds::registerKeyMappings);
+        bus.addListener(CrosshairHandler::onConfigReload);
+        bus.addListener(ClientHandler::onRegisterReloadListener);
+        bus.addListener(ClientHandler::registerAdditional);
+        bus.addListener(ClientHandler::onClientSetup);
+    }
+
+    private static void onClientSetup(net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent event) {
+        event.enqueueWork(ClientHandler::setup);
+    }
 
     public static void setup() {
         MinecraftForge.EVENT_BUS.register(AimingHandler.get());

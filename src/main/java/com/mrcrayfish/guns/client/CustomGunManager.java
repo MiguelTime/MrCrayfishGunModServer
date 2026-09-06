@@ -1,13 +1,11 @@
 package com.mrcrayfish.guns.client;
 
-import com.mrcrayfish.framework.api.data.login.ILoginData;
 import com.mrcrayfish.guns.Reference;
 import com.mrcrayfish.guns.common.CustomGun;
 import com.mrcrayfish.guns.common.CustomGunLoader;
 import com.mrcrayfish.guns.init.ModItems;
 import com.mrcrayfish.guns.network.message.S2CMessageUpdateGuns;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -16,10 +14,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.apache.commons.lang3.Validate;
 
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Author: MrCrayfish
@@ -64,21 +60,4 @@ public class CustomGunManager
         customGunMap = null;
     }
 
-    public static class LoginData implements ILoginData
-    {
-        @Override
-        public void writeData(FriendlyByteBuf buffer)
-        {
-            Validate.notNull(CustomGunLoader.get());
-            CustomGunLoader.get().writeCustomGuns(buffer);
-        }
-
-        @Override
-        public Optional<String> readData(FriendlyByteBuf buffer)
-        {
-            Map<ResourceLocation, CustomGun> customGuns = CustomGunLoader.readCustomGuns(buffer);
-            CustomGunManager.updateCustomGuns(customGuns);
-            return Optional.empty();
-        }
-    }
 }

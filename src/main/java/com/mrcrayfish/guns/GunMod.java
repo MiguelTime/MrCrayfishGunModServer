@@ -1,16 +1,10 @@
 package com.mrcrayfish.guns;
 
 import com.mrcrayfish.framework.api.FrameworkAPI;
-import com.mrcrayfish.framework.api.client.FrameworkClientAPI;
 import com.mrcrayfish.guns.client.ClientHandler;
-import com.mrcrayfish.guns.client.CustomGunManager;
-import com.mrcrayfish.guns.client.KeyBinds;
-import com.mrcrayfish.guns.client.MetaLoader;
-import com.mrcrayfish.guns.client.handler.CrosshairHandler;
 import com.mrcrayfish.guns.common.BoundingBoxManager;
 import com.mrcrayfish.guns.common.NetworkGunManager;
 import com.mrcrayfish.guns.common.ProjectileManager;
-import com.mrcrayfish.guns.compat.SimplePlanesHelper;
 import com.mrcrayfish.guns.crafting.WorkbenchIngredient;
 import com.mrcrayfish.guns.datagen.*;
 import com.mrcrayfish.guns.entity.GrenadeEntity;
@@ -32,7 +26,6 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
@@ -72,15 +65,9 @@ public class GunMod
         ModSounds.REGISTER.register(bus);
         ModTileEntities.REGISTER.register(bus);
         bus.addListener(this::onCommonSetup);
-        bus.addListener(this::onClientSetup);
         bus.addListener(this::onGatherData);
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            FrameworkClientAPI.registerDataLoader(MetaLoader.getInstance());
-            ClientHandler.registerCreativeTab(bus);
-            bus.addListener(KeyBinds::registerKeyMappings);
-            bus.addListener(CrosshairHandler::onConfigReload);
-            bus.addListener(ClientHandler::onRegisterReloadListener);
-            bus.addListener(ClientHandler::registerAdditional);
+            ClientHandler.register(bus);
         });
         controllableLoaded = ModList.get().isLoaded("controllable");
         curiosLoaded = ModList.get().isLoaded("curios");
@@ -101,7 +88,7 @@ public class GunMod
             FrameworkAPI.registerSyncedDataKey(ModSyncedDataKeys.RELOADING);
             FrameworkAPI.registerSyncedDataKey(ModSyncedDataKeys.SHOOTING);
             FrameworkAPI.registerLoginData(new ResourceLocation(Reference.MOD_ID, "network_gun_manager"), NetworkGunManager.LoginData::new);
-            FrameworkAPI.registerLoginData(new ResourceLocation(Reference.MOD_ID, "custom_gun_manager"), CustomGunManager.LoginData::new);
+            FrameworkAPI.registerLoginData(new ResourceLocation(Reference.MOD_ID, "custom_gun_manager"), CustomGunLoader.LoginData::new);
             CraftingHelper.register(new ResourceLocation(Reference.MOD_ID, "workbench_ingredient"), WorkbenchIngredient.Serializer.INSTANCE);
             ProjectileManager.getInstance().registerFactory(ModItems.GRENADE.get(), (worldIn, entity, weapon, item, modifiedGun) -> new GrenadeEntity(ModEntities.GRENADE.get(), worldIn, entity, weapon, item, modifiedGun));
             ProjectileManager.getInstance().registerFactory(ModItems.MISSILE.get(), (worldIn, entity, weapon, item, modifiedGun) -> new MissileEntity(ModEntities.MISSILE.get(), worldIn, entity, weapon, item, modifiedGun));
@@ -109,13 +96,12 @@ public class GunMod
             {
                 MinecraftForge.EVENT_BUS.register(new BoundingBoxManager());
             }
-            if (ModList.get().isLoaded("simpleplanes")) SimplePlanesHelper.init();
         });
-    }
-
-    private void onClientSetup(FMLClientSetupEvent event)
-    {
-        event.enqueueWork(ClientHandler::setup);
+        if (ModList.get().isLoaded("simpleplanes"))
+        {
+            DistExecutor.unsafeRunWhenOn(Dist.DEDICATED_SERVER, () -> () -> com.mrcrayfish.guns.compat.SimplePlanesHelper.init());
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.mrcrayfish.guns.compat.SimplePlanesHelper.init());
+        }
     }
 
     private void onGatherData(GatherDataEvent event)
