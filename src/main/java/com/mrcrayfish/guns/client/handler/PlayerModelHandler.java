@@ -1,5 +1,6 @@
 package com.mrcrayfish.guns.client.handler;
 
+import com.mrcrayfish.guns.client.render.ClientGripTypes;
 import com.mrcrayfish.guns.common.Gun;
 import com.mrcrayfish.guns.item.GunItem;
 import net.minecraft.client.model.PlayerModel;
@@ -25,7 +26,7 @@ public class PlayerModelHandler
         {
             poseStack.pushPose();
             Gun gun = ((GunItem) heldItem.getItem()).getModifiedGun(heldItem);
-            if(gun.getGeneral().getGripType().getHeldAnimation().applyOffhandTransforms(player, event.getPlayerModel(), heldItem, poseStack, event.getDeltaTicks()))
+            if(ClientGripTypes.get(gun.getGeneral().getGripType()).applyOffhandTransforms(player, event.getPlayerModel(), heldItem, poseStack, event.getDeltaTicks()))
             {
                 MultiBufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
                 GunRenderingHandler.get().renderWeapon(player, heldItem, ItemTransforms.TransformType.FIXED, poseStack, buffer, event.getLight(), event.getDeltaTicks());
@@ -42,7 +43,7 @@ public class PlayerModelHandler
         if(!heldItem.isEmpty() && heldItem.getItem() instanceof GunItem)
         {
             Gun gun = ((GunItem) heldItem.getItem()).getModifiedGun(heldItem);
-            gun.getGeneral().getGripType().getHeldAnimation().applyPlayerPreRender(player, InteractionHand.MAIN_HAND, AimingHandler.get().getAimProgress((Player) event.getEntity(), event.getPartialTick()), event.getPoseStack(), event.getMultiBufferSource());
+            ClientGripTypes.get(gun.getGeneral().getGripType()).applyPlayerPreRender(player, InteractionHand.MAIN_HAND, AimingHandler.get().getAimProgress((Player) event.getEntity(), event.getPartialTick()), event.getPoseStack(), event.getMultiBufferSource());
         }
     }
 

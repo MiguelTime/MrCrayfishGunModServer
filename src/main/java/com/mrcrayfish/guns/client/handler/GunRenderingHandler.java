@@ -10,6 +10,7 @@ import com.mrcrayfish.guns.GunMod;
 import com.mrcrayfish.guns.Reference;
 import com.mrcrayfish.guns.client.GunModel;
 import com.mrcrayfish.guns.client.GunRenderType;
+import com.mrcrayfish.guns.client.render.ClientGripTypes;
 import com.mrcrayfish.guns.client.render.gun.IOverrideModel;
 import com.mrcrayfish.guns.client.render.gun.ModelOverrides;
 import com.mrcrayfish.guns.client.util.PropertyHelper;
@@ -149,7 +150,7 @@ public class GunRenderingHandler {
         ItemStack heldItem = mc.player.getMainHandItem();
         if (heldItem.getItem() instanceof GunItem) {
             Gun modifiedGun = ((GunItem) heldItem.getItem()).getModifiedGun(heldItem);
-            down = !modifiedGun.getGeneral().getGripType().getHeldAnimation().canRenderOffhandItem();
+            down = !ClientGripTypes.get(modifiedGun.getGeneral().getGripType()).canRenderOffhandItem();
         }
 
         float direction = down ? -0.3F : 0.3F;
@@ -234,7 +235,7 @@ public class GunRenderingHandler {
             Player player = Minecraft.getInstance().player;
             if (player != null && player.getMainHandItem().getItem() instanceof GunItem) {
                 Gun modifiedGun = ((GunItem) player.getMainHandItem().getItem()).getModifiedGun(player.getMainHandItem());
-                if (!modifiedGun.getGeneral().getGripType().getHeldAnimation().canRenderOffhandItem()) {
+                if (!ClientGripTypes.get(modifiedGun.getGeneral().getGripType()).canRenderOffhandItem()) {
                     return;
                 }
             }
@@ -361,7 +362,7 @@ public class GunRenderingHandler {
 
         /* Renders the first persons arms from the grip type of the weapon */
         poseStack.pushPose();
-        modifiedGun.getGeneral().getGripType().getHeldAnimation().renderFirstPersonArms(Minecraft.getInstance().player, hand, heldItem, poseStack, event.getMultiBufferSource(), packedLight, event.getPartialTick());
+        ClientGripTypes.get(modifiedGun.getGeneral().getGripType()).renderFirstPersonArms(Minecraft.getInstance().player, hand, heldItem, poseStack, event.getMultiBufferSource(), packedLight, event.getPartialTick());
         poseStack.popPose();
 
         /* Renders the weapon */
@@ -413,7 +414,7 @@ public class GunRenderingHandler {
         if (Config.CLIENT.display.weaponSway.get() && player != null) {
             poseStack.translate(x, y, z);
 
-            double zOffset = modifiedGun.getGeneral().getGripType().getHeldAnimation().getFallSwayZOffset();
+            double zOffset = ClientGripTypes.get(modifiedGun.getGeneral().getGripType()).getFallSwayZOffset();
             poseStack.translate(0, -0.25, zOffset);
             poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, this.prevFallSway, this.fallSway)));
             poseStack.translate(0, 0.25, -zOffset);
@@ -435,7 +436,7 @@ public class GunRenderingHandler {
     }
 
     private void applySprintingTransforms(Gun modifiedGun, HumanoidArm hand, PoseStack poseStack, float partialTicks) {
-        if (Config.CLIENT.display.sprintAnimation.get() && modifiedGun.getGeneral().getGripType().getHeldAnimation().canApplySprintingAnimation()) {
+        if (Config.CLIENT.display.sprintAnimation.get() && ClientGripTypes.get(modifiedGun.getGeneral().getGripType()).canApplySprintingAnimation()) {
             float leftHanded = hand == HumanoidArm.LEFT ? -1 : 1;
             float transition = (this.prevSprintTransition + (this.sprintTransition - this.prevSprintTransition) * partialTicks) / 5F;
             transition = (float) Math.sin((transition * Math.PI) / 2);

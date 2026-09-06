@@ -2,7 +2,7 @@ package com.mrcrayfish.guns.client.render.pose;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.guns.Config;
-import com.mrcrayfish.guns.common.GripType;
+import com.mrcrayfish.guns.client.render.ClientGripTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -107,7 +107,7 @@ public class MiniGunPose extends WeaponPose
     @Override
     public boolean applyOffhandTransforms(Player player, PlayerModel model, ItemStack stack, PoseStack poseStack, float partialTicks)
     {
-        return GripType.applyBackTransforms(player, poseStack);
+        return ClientGripTypes.applyBackTransforms(player, poseStack);
     }
 
     @Override
