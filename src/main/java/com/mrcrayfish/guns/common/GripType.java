@@ -32,6 +32,7 @@ public class GripType
      */
     public static final GripType BAZOOKA = new GripType(new ResourceLocation(Reference.MOD_ID, "bazooka"));
 
+    /**
      * The grip type map.
      */
     private static Map<ResourceLocation, GripType> gripTypeMap = new HashMap<>();

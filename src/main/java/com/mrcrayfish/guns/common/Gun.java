@@ -6,7 +6,7 @@ import com.mrcrayfish.guns.GunMod;
 import com.mrcrayfish.guns.Reference;
 import com.mrcrayfish.guns.annotation.Ignored;
 import com.mrcrayfish.guns.annotation.Optional;
-import com.mrcrayfish.guns.client.ClientHandler;
+import com.mrcrayfish.guns.client.ClientGunEditor;
 import com.mrcrayfish.guns.compat.BackpackHelper;
 import com.mrcrayfish.guns.compat.L2BackpackHelper;
 import com.mrcrayfish.guns.compat.SophisticatedHelper;
@@ -14,15 +14,11 @@ import com.mrcrayfish.guns.compat.TravelersBackpackHelper;
 import com.mrcrayfish.guns.debug.Debug;
 import com.mrcrayfish.guns.debug.IDebugWidget;
 import com.mrcrayfish.guns.debug.IEditorMenu;
-import com.mrcrayfish.guns.debug.client.screen.widget.DebugButton;
-import com.mrcrayfish.guns.debug.client.screen.widget.DebugSlider;
-import com.mrcrayfish.guns.debug.client.screen.widget.DebugToggle;
 import com.mrcrayfish.guns.item.ScopeItem;
 import com.mrcrayfish.guns.item.attachment.IAttachment;
 import com.mrcrayfish.guns.item.attachment.impl.Scope;
 import com.mrcrayfish.guns.util.GunJsonUtil;
 import com.mrcrayfish.guns.util.SuperBuilder;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -85,20 +81,7 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu
     @Override
     public void getEditorWidgets(List<Pair<Component, Supplier<IDebugWidget>>> widgets)
     {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            ItemStack heldItem = Objects.requireNonNull(Minecraft.getInstance().player).getMainHandItem();
-            ItemStack scope = Gun.getScopeStack(heldItem);
-            if(scope.getItem() instanceof ScopeItem scopeItem)
-            {
-                widgets.add(Pair.of(scope.getItem().getName(scope), () -> new DebugButton(Component.literal("Edit"), btn -> {
-                    Minecraft.getInstance().setScreen(ClientHandler.createEditorScreen(Debug.getScope(scopeItem)));
-                })));
-            }
-
-            widgets.add(Pair.of(this.modules.getEditorLabel(), () -> new DebugButton(Component.literal(">"), btn -> {
-                Minecraft.getInstance().setScreen(ClientHandler.createEditorScreen(this.modules));
-            })));
-        });
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientGunEditor.addGunWidgets(this, widgets));
     }
 
     public static class General implements INBTSerializable<CompoundTag>
@@ -833,6 +816,22 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu
             return this.zoom;
         }
 
+        public void setZoomEnabled(boolean enabled)
+        {
+            if(enabled)
+            {
+                if(this.cachedZoom != null)
+                    this.zoom = this.cachedZoom;
+                else
+                    this.zoom = this.cachedZoom = new Zoom();
+            }
+            else
+            {
+                this.cachedZoom = this.zoom;
+                this.zoom = null;
+            }
+        }
+
         public Attachments getAttachments()
         {
             return this.attachments;
@@ -847,27 +846,7 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu
         @Override
         public void getEditorWidgets(List<Pair<Component, Supplier<IDebugWidget>>> widgets)
         {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                widgets.add(Pair.of(Component.literal("Enabled Iron Sights"), () -> new DebugToggle(this.zoom != null, val -> {
-                    if(val) {
-                        if(this.cachedZoom != null) {
-                            this.zoom = this.cachedZoom;
-                        } else {
-                            this.zoom = new Zoom();
-                            this.cachedZoom = this.zoom;
-                        }
-                    } else {
-                        this.cachedZoom = this.zoom;
-                        this.zoom = null;
-                    }
-                })));
-
-                widgets.add(Pair.of(Component.literal("Adjust Iron Sights"), () -> new DebugButton(Component.literal(">"), btn -> {
-                    if(btn.active && this.zoom != null) {
-                        Minecraft.getInstance().setScreen(ClientHandler.createEditorScreen(this.zoom));
-                    }
-                }, () -> this.zoom != null)));
-            });
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientGunEditor.addModuleWidgets(this, widgets));
         }
 
         public static class Zoom extends Positioned implements IEditorMenu
@@ -919,16 +898,17 @@ public class Gun implements INBTSerializable<CompoundTag>, IEditorMenu
             @Override
             public void getEditorWidgets(List<Pair<Component, Supplier<IDebugWidget>>> widgets)
             {
-                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                    widgets.add(Pair.of(Component.literal("FOV Modifier"), () -> new DebugSlider(0.0, 1.0, this.fovModifier, 0.01, 3, val -> {
-                        this.fovModifier = val.floatValue();
-                    })));
-                });
+                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientGunEditor.addZoomWidgets(this, widgets));
             }
 
             public float getFovModifier()
             {
                 return this.fovModifier;
+            }
+
+            public void setFovModifier(float fovModifier)
+            {
+                this.fovModifier = fovModifier;
             }
 
             public static Builder builder()
