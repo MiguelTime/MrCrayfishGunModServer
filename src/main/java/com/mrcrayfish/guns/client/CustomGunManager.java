@@ -30,7 +30,7 @@ public class CustomGunManager
         return updateCustomGuns(message.getCustomGuns());
     }
 
-    private static boolean updateCustomGuns(Map<ResourceLocation, CustomGun> customGunMap)
+    public static boolean updateCustomGuns(Map<ResourceLocation, CustomGun> customGunMap)
     {
         CustomGunManager.customGunMap = customGunMap;
         return true;

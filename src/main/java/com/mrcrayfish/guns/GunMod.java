@@ -3,6 +3,7 @@ package com.mrcrayfish.guns;
 import com.mrcrayfish.framework.api.FrameworkAPI;
 import com.mrcrayfish.guns.client.ClientHandler;
 import com.mrcrayfish.guns.common.BoundingBoxManager;
+import com.mrcrayfish.guns.common.CustomGunLoader;
 import com.mrcrayfish.guns.common.NetworkGunManager;
 import com.mrcrayfish.guns.common.ProjectileManager;
 import com.mrcrayfish.guns.crafting.WorkbenchIngredient;
