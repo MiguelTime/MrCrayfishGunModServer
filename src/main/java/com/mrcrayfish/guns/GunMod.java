@@ -1,7 +1,6 @@
 package com.mrcrayfish.guns;
 
 import com.mrcrayfish.framework.api.FrameworkAPI;
-import com.mrcrayfish.guns.client.ClientHandler;
 import com.mrcrayfish.guns.common.BoundingBoxManager;
 import com.mrcrayfish.guns.common.CustomGunLoader;
 import com.mrcrayfish.guns.common.NetworkGunManager;
@@ -16,13 +15,11 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -67,9 +64,6 @@ public class GunMod
         ModTileEntities.REGISTER.register(bus);
         bus.addListener(this::onCommonSetup);
         bus.addListener(this::onGatherData);
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            ClientHandler.register(bus);
-        });
         controllableLoaded = ModList.get().isLoaded("controllable");
         curiosLoaded = ModList.get().isLoaded("curios");
         backpackedLoaded = ModList.get().isLoaded("backpacked");
@@ -99,10 +93,7 @@ public class GunMod
             }
         });
         if (ModList.get().isLoaded("simpleplanes"))
-        {
-            DistExecutor.unsafeRunWhenOn(Dist.DEDICATED_SERVER, () -> () -> com.mrcrayfish.guns.compat.SimplePlanesHelper.init());
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.mrcrayfish.guns.compat.SimplePlanesHelper.init());
-        }
+            com.mrcrayfish.guns.compat.SimplePlanesHelper.init();
     }
 
     private void onGatherData(GatherDataEvent event)
