@@ -118,8 +118,16 @@ public class ShootingHandler
     @SubscribeEvent
     public void onHandleShooting(ClientTickEvent.Pre event)
     {
-if(!this.isInGame())
+        if(!this.isInGame())
+        {
+            if(this.shooting)
+            {
+                this.shooting = false;
+                if(Minecraft.getInstance().player != null && Minecraft.getInstance().level != null)
+                    PacketHandler.getPlayChannel().sendToServer(new C2SMessageShooting(false));
+            }
             return;
+        }
 
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
@@ -129,7 +137,10 @@ if(!this.isInGame())
             if(heldItem.getItem() instanceof GunItem && (Gun.hasAmmo(heldItem) || player.isCreative()) && !PlayerReviveHelper.isBleeding(player))
             {
                 boolean shooting = KeyBinds.getShootMapping().isDown();
-                // TODO: restore Controllable integration for NeoForge 1.21.1.
+                if(GunMod.controllableLoaded)
+                {
+                    shooting |= ControllerHandler.isShooting();
+                }
                 if(shooting)
                 {
                     if(!this.shooting)
@@ -172,7 +183,7 @@ if(!isInGame())
             ItemStack heldItem = player.getMainHandItem();
             if(heldItem.getItem() instanceof GunItem)
             {
-                if(KeyBinds.getShootMapping().isDown())
+                if(KeyBinds.getShootMapping().isDown() || GunMod.controllableLoaded && ControllerHandler.isShooting())
                 {
                     Gun gun = ((GunItem) heldItem.getItem()).getModifiedGun(heldItem);
                     if(gun.getGeneral().isAuto())

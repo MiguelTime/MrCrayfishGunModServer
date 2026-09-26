@@ -1,27 +1,21 @@
 package com.mrcrayfish.guns.client;
 
-import com.mrcrayfish.controllable.client.binding.IBindingContext;
-import com.mrcrayfish.guns.item.GunItem;
-import net.minecraft.client.Minecraft;
-import net.neoforged.neoforge.client.settings.KeyConflictContext;
+import com.mrcrayfish.controllable.client.binding.context.InGameContext;
+import net.minecraft.resources.ResourceLocation;
 
-/**
- * Author: MrCrayfish
- */
-public enum GunConflictContext implements IBindingContext
+/** Gun handlers check the held item and yield to vanilla bindings when not holding a gun. */
+public final class GunConflictContext extends InGameContext
 {
-    IN_GAME_HOLDING_WEAPON
-    {
-        @Override
-        public boolean isActive()
-        {
-            return !KeyConflictContext.GUI.isActive() && Minecraft.getInstance().player != null && Minecraft.getInstance().player.getMainHandItem().getItem() instanceof GunItem;
-        }
+    public static final GunConflictContext IN_GAME_HOLDING_WEAPON = new GunConflictContext();
 
-        @Override
-        public boolean conflicts(IBindingContext other)
-        {
-            return this == other;
-        }
+    private GunConflictContext()
+    {
+        super(ResourceLocation.fromNamespaceAndPath("cgm", "holding_weapon"));
+    }
+
+    @Override
+    public int priority()
+    {
+        return super.priority() + 1;
     }
 }

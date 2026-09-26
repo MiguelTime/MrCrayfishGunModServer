@@ -218,7 +218,10 @@ Player player = Minecraft.getInstance().player;
             return false;
 
         boolean zooming = KeyBinds.getAimMapping().isDown();
-        // TODO: restore Controllable integration for NeoForge 1.21.1.
+        if(GunMod.controllableLoaded)
+        {
+            zooming |= ControllerHandler.isAiming();
+        }
 
         return zooming;
     }

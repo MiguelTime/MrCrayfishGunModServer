@@ -26,12 +26,9 @@ repositories {
 // TODO: restore these optional integrations for NeoForge 1.21.1.
 // Original source is retained; none of the core gameplay/rendering packages are excluded.
 sourceSets.main.java {
-    exclude 'com/mrcrayfish/guns/compat/SimplePlanesHelper.java'
-    exclude 'com/mrcrayfish/guns/compat/CMDCamHelper.java'
-    exclude 'com/mrcrayfish/guns/client/GunButtonBindings.java'
-    exclude 'com/mrcrayfish/guns/client/GunConflictContext.java'
-    exclude 'com/mrcrayfish/guns/client/handler/ControllerHandler.java'
-    exclude 'com/mrcrayfish/guns/mixin/common/simpleplanes/ShooterUpgradeMixin.java'
+    // exclude 'com/mrcrayfish/guns/compat/SimplePlanesHelper.java'
+    // exclude 'com/mrcrayfish/guns/compat/CMDCamHelper.java'
+    // exclude 'com/mrcrayfish/guns/mixin/common/simpleplanes/ShooterUpgradeMixin.java'
 }
 
 sourceSets.main.resources {
@@ -82,6 +79,13 @@ dependencies {
     compileOnly "maven.modrinth:l2backpack:${l2_backpack_version_id}"
     compileOnly "maven.modrinth:l2library:${l2_library_version_id}"
     compileOnly "curse.maven:backpacked-352835:${backpacked_file_id}"
+    compileOnly "curse.maven:cmdcam-251244:${cmdcam_file_id}"
+    compileOnly "curse.maven:controllable-317269:${controllable_file_id}"
+    // Opt in for controller testing: gradlew runClient -PwithControllable
+    if (project.hasProperty('withControllable')) {
+        localRuntime "curse.maven:controllable-317269:${controllable_file_id}"
+    }
+    compileOnly "curse.maven:simple-planes-388908:${simple_planes_file_id}"
 }
 
 def generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {

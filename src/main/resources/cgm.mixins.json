@@ -8,7 +8,8 @@
     "common.EndPortalBlockMixin",
     "common.LayeredCauldronBlockMixin",
     "common.LivingEntityMixin",
-    "common.SittingPhaseMixin"
+    "common.SittingPhaseMixin",
+    "common.simpleplanes.ShooterUpgradeMixin"
   ],
   "client": [
     "client.ItemInHandLayerMixin",

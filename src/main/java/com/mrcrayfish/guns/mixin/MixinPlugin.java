@@ -9,6 +9,7 @@ import java.util.Set;
 
 public class MixinPlugin implements IMixinConfigPlugin {
     private boolean isFrameworkInstalled;
+    private boolean isSimplePlanesInstalled;
     @Override
     public void onLoad(String mixinPackage) {
         try {
@@ -16,6 +17,12 @@ public class MixinPlugin implements IMixinConfigPlugin {
             isFrameworkInstalled = true;
         } catch (Exception e) {
             isFrameworkInstalled = false;
+        }
+        try {
+            Class.forName("xyz.przemyk.simpleplanes.SimplePlanesMod", false, this.getClass().getClassLoader());
+            isSimplePlanesInstalled = true;
+        } catch (Exception e) {
+            isSimplePlanesInstalled = false;
         }
     }
 
@@ -26,7 +33,9 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        return isFrameworkInstalled; // this makes sure that forge's helpful mods not found screen shows up
+        if (!isFrameworkInstalled) return false;
+        if (mixinClassName.contains("simpleplanes")) return isSimplePlanesInstalled;
+        return true;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.mrcrayfish.guns.client.handler;
 
+import com.mrcrayfish.guns.compat.CMDCamHelper;
 import com.mrcrayfish.guns.util.GunItemData;
 
 import com.mojang.blaze3d.platform.Window;
@@ -821,7 +822,7 @@ this.updateSprinting();
 
     @SubscribeEvent
     public void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {
-        // TODO: restore CMDCam integration for NeoForge 1.21.1.
+        if (GunMod.cmdCamLoaded && CMDCamHelper.isRollModified()) return;
         if (Config.CLIENT.display.cameraRollEffect.get()) {
             float roll = (float) Mth.lerp(event.getPartialTick(), this.prevImmersiveRoll, this.immersiveRoll);
             roll = (float) Math.sin((roll * Math.PI) / 2.0);

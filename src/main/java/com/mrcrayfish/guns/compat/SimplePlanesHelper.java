@@ -13,7 +13,9 @@ import com.mrcrayfish.guns.item.GunItem;
 import com.mrcrayfish.guns.item.IAmmo;
 import com.mrcrayfish.guns.network.PacketHandler;
 import com.mrcrayfish.guns.network.message.S2CMessageGunSound;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -23,10 +25,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import xyz.przemyk.simpleplanes.entities.PlaneEntity;
 
 public class SimplePlanesHelper {
@@ -37,7 +38,7 @@ public class SimplePlanesHelper {
             return;
         } catch (ClassNotFoundException ignored) {
         }
-        MinecraftForge.EVENT_BUS.register(new SimplePlanesHelper());
+        NeoForge.EVENT_BUS.register(new SimplePlanesHelper());
     }
 
     @SubscribeEvent
@@ -78,7 +79,7 @@ public class SimplePlanesHelper {
 
             GunItem gunItem = (GunItem) gunDummy.getItem();
             Gun gun = gunItem.getGun();
-            IProjectileFactory projectileFactory = ProjectileManager.getInstance().getFactory(ForgeRegistries.ITEMS.getKey(ammoItem));
+            IProjectileFactory projectileFactory = ProjectileManager.getInstance().getFactory(BuiltInRegistries.ITEM.getKey(ammoItem));
             ProjectileEntity projectile = projectileFactory.create(level, player, gunDummy, gunItem, gun);
             projectile.setWeapon(gunDummy);
             projectile.setPos(x, y, z);
@@ -97,7 +98,7 @@ public class SimplePlanesHelper {
                     double radius = Config.SERVER.gunShotMaxDistance.get();
                     boolean muzzle = gun.getDisplay().getFlash() != null;
                     S2CMessageGunSound messageSound = new S2CMessageGunSound(fireSound, SoundSource.PLAYERS, (float) posX, (float) posY, (float) posZ, volume, pitch, player.getId(), muzzle, false);
-                    PacketHandler.getPlayChannel().sendToNearbyPlayers(() -> LevelLocation.create(player.level(), player.position(), radius), messageSound);
+                    PacketHandler.getPlayChannel().sendToNearbyPlayers(() -> LevelLocation.create((ServerLevel) player.level(), player.position(), radius), messageSound);
                 }
             }
 

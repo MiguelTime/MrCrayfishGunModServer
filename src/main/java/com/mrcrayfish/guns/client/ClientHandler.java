@@ -72,7 +72,11 @@ public class ClientHandler {
         NeoForge.EVENT_BUS.register(SoundHandler.get());
         NeoForge.EVENT_BUS.register(new PlayerModelHandler());
 
-        // TODO: restore Controllable integration for NeoForge 1.21.1.
+        if(GunMod.controllableLoaded)
+        {
+            GunButtonBindings.register();
+            ControllerHandler.init();
+        }
         setupRenderLayers();
         registerColors();
         registerModelOverrides();

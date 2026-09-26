@@ -23,6 +23,7 @@ public class PlayerReviveHelper
         try
         {
             init();
+            if (disable) return false;
             Object object = getBleeding.invoke(null, player);
             return (boolean) isBleeding.invoke(object);
         }
@@ -35,7 +36,8 @@ public class PlayerReviveHelper
 
     private static void init()
     {
-        if(getBleeding == null)
+        if (disable) return;
+        if (getBleeding == null)
         {
             try
             {

@@ -10,6 +10,7 @@ import com.mrcrayfish.guns.client.handler.CrosshairHandler;
 import com.mrcrayfish.guns.common.BoundingBoxManager;
 import com.mrcrayfish.guns.common.NetworkGunManager;
 import com.mrcrayfish.guns.common.ProjectileManager;
+import com.mrcrayfish.guns.compat.SimplePlanesHelper;
 import com.mrcrayfish.guns.datagen.*;
 import com.mrcrayfish.guns.entity.GrenadeEntity;
 import com.mrcrayfish.guns.entity.MissileEntity;
@@ -48,6 +49,7 @@ public class GunMod
     public static boolean travelersBackpackLoaded = false;
     public static boolean l2BackpackLoaded = false;
     public static boolean cmdCamLoaded = false;
+    public static boolean simplePlanesLoaded = false;
     public static final Logger LOGGER = LogManager.getLogger(Reference.MOD_ID);
 
     public GunMod(IEventBus bus, ModContainer container)
@@ -85,7 +87,10 @@ public class GunMod
         sopLoaded = ModList.get().isLoaded("sophisticatedbackpacks");
         travelersBackpackLoaded = ModList.get().isLoaded("travelersbackpack");
         l2BackpackLoaded = ModList.get().isLoaded("l2backpack");
-        // TODO: restore Controllable, PlayerRevive and CMDCam integration for NeoForge 1.21.1.
+        cmdCamLoaded = ModList.get().isLoaded("cmdcam");
+        playerReviveLoaded = ModList.get().isLoaded("playerrevive");
+        controllableLoaded = ModList.get().isLoaded("controllable");
+        simplePlanesLoaded = ModList.get().isLoaded("simpleplanes");
     }
 
     private void onCommonSetup(FMLCommonSetupEvent event)
@@ -102,7 +107,7 @@ public class GunMod
             {
                 NeoForge.EVENT_BUS.register(new BoundingBoxManager());
             }
-            // TODO: restore Simple Planes integration for NeoForge 1.21.1.
+            if (simplePlanesLoaded) SimplePlanesHelper.init();
         });
     }
 
