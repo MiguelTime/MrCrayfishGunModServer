@@ -25,3 +25,5 @@ libs
 
 classes
 src/generated/resources/.cache/*
+# Local migration notes
+/PORTING.md

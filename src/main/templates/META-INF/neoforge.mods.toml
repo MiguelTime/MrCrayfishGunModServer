@@ -8,7 +8,7 @@ version="${mod_version}"
 displayName="MrCrayfish's Gun Mod"
 displayURL="https://mrcrayfish.com/"
 logoFile="cgm_banner.png"
-authors="MrCrayfish"
+authors="MrCrayfish, VulpesStella, FrostLeaf, createmeow"
 description="MrCrayfish's Gun Mod adds in simple and straight forward weapons into Minecraft. They can be configured with many different attachments to add extra stats to your weapon and coloured to your personal liking. This mod adds ten weapons into the game!"
 
 [[dependencies.cgm]]
